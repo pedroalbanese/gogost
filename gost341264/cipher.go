@@ -1,4 +1,4 @@
-// GoGOST -- Pure Go GOST cryptographic functions library
+﻿// GoGOST -- Pure Go GOST cryptographic functions library
 // Copyright (C) 2015-2020 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 package gost341264
 
 import (
-	"go.cypherpunks.ru/gogost/v5/gost28147"
+	"github.com/pedroalbanese/gogost/gost28147"
 )
 
 const (
