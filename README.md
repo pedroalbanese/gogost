@@ -1,4 +1,4 @@
-# Pure Go GOST cryptographic functions library.
+## Pure Go GOST cryptographic functions library.
 ### GOST is GOvernment STandard of Russian Federation (and Soviet Union).
 
 * GOST 28147-89 (RFC 5830) block cipher with ECB, CNT (CTR), CFB, MAC
