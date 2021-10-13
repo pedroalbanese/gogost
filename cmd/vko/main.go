@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Command-line 34.10-2012 Public key shared key agreement.
+// Command-line 34.10-2012 Shared key agreement (VKO).
 package main
 
 import (
