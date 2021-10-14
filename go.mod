@@ -1,4 +1,4 @@
-package github.com/pedroalbanese/gogost
+module github.com/pedroalbanese/gogost
 
 go 1.12
 
