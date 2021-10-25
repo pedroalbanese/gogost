@@ -16,4 +16,6 @@
 
 GoGOST'es home page is: http://www.gogost.cypherpunks.ru/
 
+[GoDoc](https://pkg.go.dev/github.com/pedroalbanese/gogost)
+
 Copyright © 2015-2021 Sergey Matveev
