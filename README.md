@@ -1,5 +1,5 @@
 ## Pure Go GOST cryptographic functions library.
-[![ISC License](http://img.shields.io/badge/license-glp3-blue.svg)](https://github.com/pedroalbanese/gogost/blob/master/LICENSE.md) 
+[![ISC License](http://img.shields.io/badge/license-GPL-3.0-blue.svg)](https://github.com/pedroalbanese/gogost/blob/master/LICENSE.md) 
 [![GoDoc](https://godoc.org/github.com/pedroalbanese/gogost?status.png)](http://godoc.org/github.com/pedroalbanese/gost-shred)
 [![Go Report Card](https://goreportcard.com/badge/github.com/pedroalbanese/gogost)](https://goreportcard.com/report/github.com/pedroalbanese/gogost)
 
