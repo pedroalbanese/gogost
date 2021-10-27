@@ -1,4 +1,8 @@
 ## Pure Go GOST cryptographic functions library.
+[![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](https://github.com/pedroalbanese/gogost/blob/master/LICENSE.md) 
+[![GoDoc](https://godoc.org/github.com/pedroalbanese/gogost?status.png)](http://godoc.org/github.com/pedroalbanese/gost-shred)
+[![Go Report Card](https://goreportcard.com/badge/github.com/pedroalbanese/gogost)](https://goreportcard.com/report/github.com/pedroalbanese/gogost)
+
 ### GOST is GOvernment STandard of Russian Federation (and Soviet Union).
 
 * GOST 28147-89 (RFC 5830) block cipher with ECB, CNT (CTR), CFB, MAC
