@@ -2,6 +2,8 @@
 [![ISC License](http://img.shields.io/badge/license-GPL3-blue.svg)](https://github.com/pedroalbanese/gogost/blob/master/LICENSE.md) 
 [![GoDoc](https://godoc.org/github.com/pedroalbanese/gogost?status.png)](http://godoc.org/github.com/pedroalbanese/gogost)
 [![Go Report Card](https://goreportcard.com/badge/github.com/pedroalbanese/gogost)](https://goreportcard.com/report/github.com/pedroalbanese/gogost)
+[![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/pedroalbanese/gogost)](https://golang.org)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/pedroalbanese/gogost)](https://github.com/pedroalbanese/gogost/releases)
 
 ### GOST is GOvernment STandard of Russian Federation (and Soviet Union).
 
