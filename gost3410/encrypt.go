@@ -4,7 +4,6 @@ package gost3410
 import (
 	"bytes"
 	"crypto"
-	"crypto/elliptic"
 	"crypto/rand"
 	"encoding/asn1"
 	"encoding/binary"
@@ -14,16 +13,6 @@ import (
 
 	"github.com/pedroalbanese/gogost/gost34112012256"
 )
-
-type PublicKey struct {
-	elliptic.Curve
-	X, Y *big.Int
-}
-
-type PrivateKey struct {
-	PublicKey
-	D *big.Int
-}
 
 type eccrypterCipher struct {
 	XCoordinate *big.Int
@@ -231,7 +220,7 @@ func Decrypt(priv *PrivateKey, data []byte,mode int) ([]byte, error) {
 	return c, nil
 }
 
-func randFieldElement(c elliptic.Curve, random io.Reader) (k *big.Int, err error) {
+func randFieldElement(c *Curve, random io.Reader) (k *big.Int, err error) {
 	if random == nil {
 		random = rand.Reader //If there is no external trusted random source,please use rand.Reader to instead of it.
 	}
