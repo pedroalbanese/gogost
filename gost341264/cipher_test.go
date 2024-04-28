@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -37,11 +37,11 @@ func TestVector(t *testing.T) {
 	c := NewCipher(key)
 	dst := make([]byte, BlockSize)
 	c.Encrypt(dst, pt[:])
-	if bytes.Compare(dst, ct[:]) != 0 {
+	if !bytes.Equal(dst, ct[:]) {
 		t.FailNow()
 	}
 	c.Decrypt(dst, dst)
-	if bytes.Compare(dst, pt[:]) != 0 {
+	if !bytes.Equal(dst, pt[:]) {
 		t.FailNow()
 	}
 }

@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2023 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ func main() {
 	log.SetFlags(log.Lshortfile)
 
 	if *cn == "" {
-		log.Fatalln("no CommonName is set")
+		log.Fatal("no CommonName is set")
 	}
 	var curve *gost3410.Curve
 	var sigAlg x509.SignatureAlgorithm
@@ -104,7 +104,7 @@ func main() {
 		curve = gost3410.CurveIdtc26gost341012512paramSetC()
 		sigAlg = x509.GOST512
 	default:
-		log.Fatalln("unknown curve name")
+		log.Fatal("unknown curve name")
 	}
 
 	var err error
@@ -113,7 +113,7 @@ func main() {
 	if *issueWith != "" {
 		caCer, caPrv, err = loadKeypair(*issueWith)
 		if err != nil {
-			log.Fatalln(err)
+			log.Fatal(err)
 		}
 		sigAlg = caCer.SignatureAlgorithm
 	}
@@ -122,15 +122,15 @@ func main() {
 	if *reuseKey == "" {
 		prvRaw := make([]byte, curve.PointSize())
 		if _, err := io.ReadFull(rand.Reader, prvRaw); err != nil {
-			log.Fatalln(err)
+			log.Fatal(err)
 		}
 		prv, err = gost3410.NewPrivateKey(curve, prvRaw)
 		if err != nil {
-			log.Fatalln(err)
+			log.Fatal(err)
 		}
 		data, err := x509.MarshalPKCS8PrivateKey(prv)
 		if err != nil {
-			log.Fatalln(err)
+			log.Fatal(err)
 		}
 		data = pem.EncodeToMemory(&pem.Block{Type: PEMKey, Bytes: data})
 		if *outKey == "" {
@@ -139,7 +139,7 @@ func main() {
 			err = os.WriteFile(*outKey, data, 0o666)
 		}
 		if err != nil {
-			log.Fatalln(err)
+			log.Fatal(err)
 		}
 		if *onlyKey {
 			return
@@ -147,7 +147,7 @@ func main() {
 	} else {
 		_, prv, err = loadKeypair(*reuseKey)
 		if err != nil {
-			log.Fatalln(err)
+			log.Fatal(err)
 		}
 	}
 
@@ -162,11 +162,11 @@ func main() {
 	if *serial == -1 {
 		data := make([]byte, 16, gost34112012256.Size)
 		if _, err = io.ReadFull(rand.Reader, data); err != nil {
-			log.Fatalln(err)
+			log.Fatal(err)
 		}
 		hasher := gost34112012256.New()
 		if _, err = hasher.Write(data); err != nil {
-			log.Fatalln(err)
+			log.Fatal(err)
 		}
 		data = hasher.Sum(data[:0])
 		sn = sn.SetBytes(data[:20])
@@ -181,17 +181,16 @@ func main() {
 
 	pub, err := prv.(*gost3410.PrivateKey).PublicKey()
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
 	hasher := gost34112012256.New()
 	if _, err = hasher.Write(pub.Raw()); err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
 	spki := hasher.Sum(nil)
 	spki = spki[:20]
 
 	cerTmpl := x509.Certificate{
-		KeyUsage:           x509.KeyUsageDigitalSignature,
 		NotBefore:          notBefore,
 		NotAfter:           notAfter,
 		SerialNumber:       sn,
@@ -200,10 +199,12 @@ func main() {
 		SubjectKeyId:       spki,
 	}
 	if *ca {
+		cerTmpl.BasicConstraintsValid = true
 		cerTmpl.IsCA = true
-		cerTmpl.KeyUsage |= x509.KeyUsageCertSign
+		cerTmpl.KeyUsage = x509.KeyUsageCertSign
 	} else {
 		cerTmpl.DNSNames = []string{*cn}
+		cerTmpl.KeyUsage = x509.KeyUsageDigitalSignature
 	}
 
 	if caCer == nil {
@@ -215,6 +216,9 @@ func main() {
 		&cerTmpl, caCer, pub,
 		&gost3410.PrivateKeyReverseDigest{Prv: caPrv.(*gost3410.PrivateKey)},
 	)
+	if err != nil {
+		log.Fatal(err)
+	}
 	data = pem.EncodeToMemory(&pem.Block{Type: PEMCer, Bytes: data})
 	if *outCer == "" {
 		_, err = os.Stdout.Write(data)
@@ -222,6 +226,6 @@ func main() {
 		err = os.WriteFile(*outCer, data, 0o666)
 	}
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
 }

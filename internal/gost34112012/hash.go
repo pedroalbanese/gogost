@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ import (
 const (
 	BlockSize = 64
 
-	MarshaledName = "STREEBOG"
+	MarshalledName = "STREEBOG"
 )
 
 var (
@@ -434,9 +434,9 @@ func l(out, data []byte) []byte {
 }
 
 func (h *Hash) MarshalBinary() (data []byte, err error) {
-	data = make([]byte, len(MarshaledName)+1+8+2*BlockSize+len(h.buf))
-	copy(data, []byte(MarshaledName))
-	idx := len(MarshaledName)
+	data = make([]byte, len(MarshalledName)+1+8+2*BlockSize+len(h.buf))
+	copy(data, []byte(MarshalledName))
+	idx := len(MarshalledName)
 	data[idx] = byte(h.size)
 	idx += 1
 	binary.BigEndian.PutUint64(data[idx:idx+8], h.n)
@@ -450,14 +450,14 @@ func (h *Hash) MarshalBinary() (data []byte, err error) {
 }
 
 func (h *Hash) UnmarshalBinary(data []byte) error {
-	expectedLen := len(MarshaledName) + 1 + 8 + 2*BlockSize
+	expectedLen := len(MarshalledName) + 1 + 8 + 2*BlockSize
 	if len(data) < expectedLen {
-		return fmt.Errorf("gogost/internal/gost34112012: len(data) != %d", expectedLen)
+		return fmt.Errorf("gogost/internal/gost34112012: len(data)=%d != %d", len(data), expectedLen)
 	}
-	if !bytes.HasPrefix(data, []byte(MarshaledName)) {
+	if !bytes.HasPrefix(data, []byte(MarshalledName)) {
 		return errors.New("gogost/internal/gost34112012: no hash name prefix")
 	}
-	idx := len(MarshaledName)
+	idx := len(MarshalledName)
 	h.size = int(data[idx])
 	idx += 1
 	h.n = binary.BigEndian.Uint64(data[idx : idx+8])

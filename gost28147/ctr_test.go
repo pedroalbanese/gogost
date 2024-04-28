@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -104,12 +104,12 @@ func TestCTRGCL3Vector(t *testing.T) {
 	ctr := c.NewCTR(iv)
 	tmp := make([]byte, len(plaintext))
 	ctr.XORKeyStream(tmp, plaintext)
-	if bytes.Compare(tmp, ciphertext) != 0 {
+	if !bytes.Equal(tmp, ciphertext) {
 		t.Fatal("encryption failed")
 	}
 	ctr = c.NewCTR(iv)
 	ctr.XORKeyStream(tmp, tmp)
-	if bytes.Compare(tmp, plaintext) != 0 {
+	if !bytes.Equal(tmp, plaintext) {
 		t.Fatal("decryption failed")
 	}
 }
@@ -145,12 +145,12 @@ func TestCTRGCL2Vector(t *testing.T) {
 	ctr := c.NewCTR(iv[:])
 	tmp := make([]byte, len(plaintext))
 	ctr.XORKeyStream(tmp, plaintext)
-	if bytes.Compare(tmp, ciphertext) != 0 {
+	if !bytes.Equal(tmp, ciphertext) {
 		t.Fatal("encryption failed")
 	}
 	ctr = c.NewCTR(iv[:])
 	ctr.XORKeyStream(tmp, tmp)
-	if bytes.Compare(tmp, plaintext) != 0 {
+	if !bytes.Equal(tmp, plaintext) {
 		t.Fatal("decryption failed")
 	}
 }
@@ -166,7 +166,7 @@ func TestCTRRandom(t *testing.T) {
 		ctr.XORKeyStream(tmp, pt[:])
 		ctr = c.NewCTR(iv[:])
 		ctr.XORKeyStream(tmp, tmp)
-		return bytes.Compare(tmp, pt) == 0
+		return bytes.Equal(tmp, pt)
 	}
 	if err := quick.Check(f, nil); err != nil {
 		t.Error(err)

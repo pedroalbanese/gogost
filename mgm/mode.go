@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,7 +21,10 @@ import (
 	"crypto/hmac"
 	"encoding/binary"
 	"errors"
+	"fmt"
 )
+
+var InvalidTag = errors.New("gogost/mgm: invalid authentication tag")
 
 type Mul interface {
 	Mul(x, y []byte) []byte
@@ -43,10 +46,10 @@ type MGM struct {
 func NewMGM(cipher cipher.Block, tagSize int) (cipher.AEAD, error) {
 	blockSize := cipher.BlockSize()
 	if !(blockSize == 8 || blockSize == 16) {
-		return nil, errors.New("gogost/mgm: only 64/128 blocksizes allowed")
+		return nil, errors.New("gogost/mgm: only {64|128} blocksizes allowed")
 	}
 	if tagSize < 4 || tagSize > blockSize {
-		return nil, errors.New("gogost/mgm: invalid tag size")
+		return nil, fmt.Errorf("gogost/mgm: invalid tag size (4<=%d<=%d)", tagSize, blockSize)
 	}
 	mgm := MGM{
 		MaxSize:   uint64(1<<uint(blockSize*8/2) - 1),
@@ -207,11 +210,13 @@ func (mgm *MGM) Seal(dst, nonce, plaintext, additionalData []byte) []byte {
 	return ret
 }
 
+// Open the authenticated ciphertext. If authentication tag is invalid,
+// then InvalidTag error is returned.
 func (mgm *MGM) Open(dst, nonce, ciphertext, additionalData []byte) ([]byte, error) {
 	mgm.validateNonce(nonce)
 	mgm.validateSizes(ciphertext, additionalData)
 	if len(ciphertext) < mgm.TagSize {
-		return nil, errors.New("ciphertext is too short")
+		return nil, fmt.Errorf("ciphertext is too short (%d<%d)", len(ciphertext), mgm.TagSize)
 	}
 	if uint64(len(ciphertext)-mgm.TagSize) > mgm.MaxSize {
 		panic("ciphertext is too big")
@@ -221,7 +226,7 @@ func (mgm *MGM) Open(dst, nonce, ciphertext, additionalData []byte) ([]byte, err
 	copy(mgm.icn, nonce)
 	mgm.auth(mgm.sum, ct, additionalData)
 	if !hmac.Equal(mgm.sum[:mgm.TagSize], ciphertext[len(ciphertext)-mgm.TagSize:]) {
-		return nil, errors.New("gogost/mgm: invalid authentication tag")
+		return nil, InvalidTag
 	}
 	mgm.crypt(out, ct)
 	return ret, nil

@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ import (
 	"encoding/binary"
 	"math/big"
 
-	"github.com/pedroalbanese/gogost/gost28147"
+	"go.cypherpunks.ru/gogost/v5/gost28147"
 )
 
 const (
@@ -131,7 +131,6 @@ func blockXor(dst, a, b *[BlockSize]byte) {
 	for i := 0; i < BlockSize; i++ {
 		dst[i] = a[i] ^ b[i]
 	}
-	return
 }
 
 func (h *Hash) step(hin, m [BlockSize]byte) [BlockSize]byte {

@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,10 +17,11 @@ package gost3410
 
 import (
 	"errors"
+	"fmt"
 	"math/big"
 
-	"github.com/pedroalbanese/gogost/gost28147"
-	"github.com/pedroalbanese/gogost/gost341194"
+	"go.cypherpunks.ru/gogost/v5/gost28147"
+	"go.cypherpunks.ru/gogost/v5/gost341194"
 )
 
 // RFC 4357 VKO GOST R 34.10-2001 key agreement function.
@@ -31,11 +32,11 @@ func (prv *PrivateKey) KEK2001(pub *PublicKey, ukm *big.Int) ([]byte, error) {
 	}
 	key, err := prv.KEK(pub, ukm)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("gogost/gost3410.PrivateKey.KEK2001: %w", err)
 	}
 	h := gost341194.New(&gost28147.SboxIdGostR341194CryptoProParamSet)
 	if _, err = h.Write(key); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("gogost/gost3410.PrivateKey.KEK2001: %w", err)
 	}
 	return h.Sum(key[:0]), nil
 }

@@ -13,33 +13,35 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Command-line 34.11-2012 256-bit hash function.
+// DANE's SPKI hash calculator
 package main
 
 import (
+	"crypto/sha256"
+	"crypto/x509"
 	"encoding/hex"
+	"encoding/pem"
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"os"
-
-	"go.cypherpunks.ru/gogost/v5"
-	"go.cypherpunks.ru/gogost/v5/gost34112012256"
-)
-
-var (
-	version = flag.Bool("version", false, "Print version information")
 )
 
 func main() {
 	flag.Parse()
-	if *version {
-		fmt.Println(gogost.Version)
-		return
+	data, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		log.Fatal(err)
 	}
-	h := gost34112012256.New()
-	if _, err := io.Copy(h, os.Stdin); err != nil {
-		panic(err)
+	b, _ := pem.Decode(data)
+	if b == nil || b.Type != "CERTIFICATE" {
+		log.Fatal("no CERTIFICATE")
 	}
-	fmt.Println(hex.EncodeToString(h.Sum(nil)))
+	cer, err := x509.ParseCertificate(b.Bytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+	h := sha256.Sum256(cer.RawSubjectPublicKeyInfo)
+	fmt.Println(hex.EncodeToString(h[:]))
 }

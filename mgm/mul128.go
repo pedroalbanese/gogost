@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -45,7 +45,8 @@ func (mul *mul128) Mul(x, y []byte) []byte {
 	x0 := binary.BigEndian.Uint64(x[8:])
 	y1 := binary.BigEndian.Uint64(y[:8])
 	y0 := binary.BigEndian.Uint64(y[8:])
-	t, x0, x1, z0, z1 := gf128half(64, y0, x0, x1, 0, 0)
+	var t uint64
+	_, x0, x1, z0, z1 := gf128half(64, y0, x0, x1, 0, 0)
 	t, x0, x1, z0, z1 = gf128half(63, y1, x0, x1, z0, z1)
 	if t&1 > 0 {
 		z0, z1 = z0^x0, z1^x1

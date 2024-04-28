@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -37,10 +37,10 @@ func TestVKO2012256(t *testing.T) {
 	prvB, _ := NewPrivateKey(c, prvRawB)
 	kekA, _ := prvA.KEK2012256(pubB, ukm)
 	kekB, _ := prvB.KEK2012256(pubA, ukm)
-	if bytes.Compare(kekA, kekB) != 0 {
+	if !bytes.Equal(kekA, kekB) {
 		t.FailNow()
 	}
-	if bytes.Compare(kekA, kek) != 0 {
+	if !bytes.Equal(kekA, kek) {
 		t.FailNow()
 	}
 }
@@ -61,7 +61,7 @@ func TestRandomVKO2012256(t *testing.T) {
 		ukm := NewUKM(ukmRaw[:])
 		kek1, _ := prv1.KEK2012256(pub2, ukm)
 		kek2, _ := prv2.KEK2012256(pub1, ukm)
-		return bytes.Compare(kek1, kek2) == 0
+		return bytes.Equal(kek1, kek2)
 	}
 	if err := quick.Check(f, nil); err != nil {
 		t.Error(err)
@@ -83,10 +83,10 @@ func TestVKO2012512(t *testing.T) {
 	prvB, _ := NewPrivateKey(c, prvRawB)
 	kekA, _ := prvA.KEK2012512(pubB, ukm)
 	kekB, _ := prvB.KEK2012512(pubA, ukm)
-	if bytes.Compare(kekA, kekB) != 0 {
+	if !bytes.Equal(kekA, kekB) {
 		t.FailNow()
 	}
-	if bytes.Compare(kekA, kek) != 0 {
+	if !bytes.Equal(kekA, kek) {
 		t.FailNow()
 	}
 }
@@ -107,7 +107,7 @@ func TestRandomVKO2012512(t *testing.T) {
 		ukm := NewUKM(ukmRaw[:])
 		kek1, _ := prv1.KEK2012512(pub2, ukm)
 		kek2, _ := prv2.KEK2012512(pub1, ukm)
-		return bytes.Compare(kek1, kek2) == 0
+		return bytes.Equal(kek1, kek2)
 	}
 	if err := quick.Check(f, nil); err != nil {
 		t.Error(err)

@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,13 +14,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // GOST R 34.11-2012 512-bit hash function.
-// RFC 6986.
+// RFC 6986. Big-endian hash output.
 package gost34112012512
 
 import (
 	"hash"
 
-	"github.com/pedroalbanese/gogost/internal/gost34112012"
+	"go.cypherpunks.ru/gogost/v5/internal/gost34112012"
 )
 
 const (

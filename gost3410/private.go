@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,10 +28,11 @@ type PrivateKey struct {
 	Key *big.Int
 }
 
-func NewPrivateKey(curve *Curve, raw []byte) (*PrivateKey, error) {
-	pointSize := curve.PointSize()
+// Unmarshal little-endian private key. "raw" must be c.PointSize() length.
+func NewPrivateKeyLE(c *Curve, raw []byte) (*PrivateKey, error) {
+	pointSize := c.PointSize()
 	if len(raw) != pointSize {
-		return nil, fmt.Errorf("gogost/gost3410: len(key) != %d", pointSize)
+		return nil, fmt.Errorf("gogost/gost3410: len(key)=%d != %d", len(raw), pointSize)
 	}
 	key := make([]byte, pointSize)
 	for i := 0; i < len(key); i++ {
@@ -41,27 +42,56 @@ func NewPrivateKey(curve *Curve, raw []byte) (*PrivateKey, error) {
 	if k.Cmp(zero) == 0 {
 		return nil, errors.New("gogost/gost3410: zero private key")
 	}
-	return &PrivateKey{curve, k.Mod(k, curve.Q)}, nil
+	return &PrivateKey{c, k.Mod(k, c.Q)}, nil
 }
 
-func GenPrivateKey(curve *Curve, rand io.Reader) (*PrivateKey, error) {
-	raw := make([]byte, curve.PointSize())
-	if _, err := io.ReadFull(rand, raw); err != nil {
-		return nil, err
+// Unmarshal big-endian private key. "raw" must be c.PointSize() length.
+func NewPrivateKeyBE(c *Curve, raw []byte) (*PrivateKey, error) {
+	pointSize := c.PointSize()
+	if len(raw) != pointSize {
+		return nil, fmt.Errorf("gogost/gost3410: len(key)=%d != %d", len(raw), pointSize)
 	}
-	return NewPrivateKey(curve, raw)
+	k := bytes2big(raw)
+	if k.Cmp(zero) == 0 {
+		return nil, errors.New("gogost/gost3410: zero private key")
+	}
+	return &PrivateKey{c, k.Mod(k, c.Q)}, nil
 }
 
-func (prv *PrivateKey) Raw() []byte {
-	raw := pad(prv.Key.Bytes(), prv.C.PointSize())
+// This is an alias for NewPrivateKeyLE().
+func NewPrivateKey(c *Curve, raw []byte) (*PrivateKey, error) {
+	return NewPrivateKeyLE(c, raw)
+}
+
+func GenPrivateKey(c *Curve, rand io.Reader) (*PrivateKey, error) {
+	raw := make([]byte, c.PointSize())
+	if _, err := io.ReadFull(rand, raw); err != nil {
+		return nil, fmt.Errorf("gogost/gost3410.GenPrivateKey: %w", err)
+	}
+	return NewPrivateKey(c, raw)
+}
+
+// Marshal little-endian private key. raw will be prv.C.PointSize() length.
+func (prv *PrivateKey) RawLE() (raw []byte) {
+	raw = pad(prv.Key.Bytes(), prv.C.PointSize())
 	reverse(raw)
 	return raw
+}
+
+// Marshal big-endian private key. raw will be prv.C.PointSize() length.
+func (prv *PrivateKey) RawBE() (raw []byte) {
+	return pad(prv.Key.Bytes(), prv.C.PointSize())
+}
+
+// This is an alias for RawLE().
+func (prv *PrivateKey) Raw() []byte {
+	return prv.RawLE()
 }
 
 func (prv *PrivateKey) PublicKey() (*PublicKey, error) {
 	x, y, err := prv.C.Exp(prv.Key, prv.C.X, prv.C.Y)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("gogost/gost3410.PrivateKey.PublicKey: %w", err)
 	}
 	return &PublicKey{prv.C, x, y}, nil
 }
@@ -80,7 +110,7 @@ func (prv *PrivateKey) SignDigest(digest []byte, rand io.Reader) ([]byte, error)
 	s := big.NewInt(0)
 Retry:
 	if _, err = io.ReadFull(rand, kRaw); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("gogost/gost3410.PrivateKey.SignDigest: %w", err)
 	}
 	k = bytes2big(kRaw)
 	k.Mod(k, prv.C.Q)
@@ -89,7 +119,7 @@ Retry:
 	}
 	r, _, err = prv.C.Exp(k, prv.C.X, prv.C.Y)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("gogost/gost3410.PrivateKey.SignDigest: %w", err)
 	}
 	r.Mod(r, prv.C.Q)
 	if r.Cmp(zero) == 0 {
@@ -109,7 +139,11 @@ Retry:
 	), nil
 }
 
-func (prv *PrivateKey) Sign(rand io.Reader, digest []byte, opts crypto.SignerOpts) ([]byte, error) {
+// Sign the digest. opts argument is unused. That is identical to SignDigest,
+// but kept to be friendly to crypto.Signer.
+func (prv *PrivateKey) Sign(
+	rand io.Reader, digest []byte, opts crypto.SignerOpts,
+) ([]byte, error) {
 	return prv.SignDigest(digest, rand)
 }
 
@@ -129,11 +163,14 @@ func (prv *PrivateKeyReverseDigest) Public() crypto.PublicKey {
 	return prv.Prv.Public()
 }
 
-func (prv *PrivateKeyReverseDigest) Sign(rand io.Reader, digest []byte, opts crypto.SignerOpts) ([]byte, error) {
-	d := make([]byte, len(digest))
-	copy(d, digest)
-	reverse(d)
-	return prv.Prv.Sign(rand, d, opts)
+func (prv *PrivateKeyReverseDigest) Sign(
+	rand io.Reader, digest []byte, opts crypto.SignerOpts,
+) ([]byte, error) {
+	dgst := make([]byte, len(digest))
+	for i := 0; i < len(digest); i++ {
+		dgst[i] = digest[len(digest)-i-1]
+	}
+	return prv.Prv.Sign(rand, dgst, opts)
 }
 
 type PrivateKeyReverseDigestAndSignature struct {
@@ -144,11 +181,14 @@ func (prv *PrivateKeyReverseDigestAndSignature) Public() crypto.PublicKey {
 	return prv.Prv.Public()
 }
 
-func (prv *PrivateKeyReverseDigestAndSignature) Sign(rand io.Reader, digest []byte, opts crypto.SignerOpts) ([]byte, error) {
-	d := make([]byte, len(digest))
-	copy(d, digest)
-	reverse(d)
-	sign, err := prv.Prv.Sign(rand, d, opts)
+func (prv *PrivateKeyReverseDigestAndSignature) Sign(
+	rand io.Reader, digest []byte, opts crypto.SignerOpts,
+) ([]byte, error) {
+	dgst := make([]byte, len(digest))
+	for i := 0; i < len(digest); i++ {
+		dgst[i] = digest[len(digest)-i-1]
+	}
+	sign, err := prv.Prv.Sign(rand, dgst, opts)
 	if err != nil {
 		return sign, err
 	}

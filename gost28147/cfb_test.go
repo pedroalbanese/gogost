@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -43,12 +43,12 @@ func TestCFBCryptomanager(t *testing.T) {
 	tmp := make([]byte, 16)
 	fe := c.NewCFBEncrypter(iv)
 	fe.XORKeyStream(tmp, pt)
-	if bytes.Compare(tmp, ct) != 0 {
+	if !bytes.Equal(tmp, ct) {
 		t.Fatal("encryption failed")
 	}
 	fd := c.NewCFBDecrypter(iv)
 	fd.XORKeyStream(tmp, ct)
-	if bytes.Compare(tmp, pt) != 0 {
+	if !bytes.Equal(tmp, pt) {
 		t.Fatal("decryption failed")
 	}
 }
@@ -65,7 +65,7 @@ func TestCFBRandom(t *testing.T) {
 		fd := c.NewCFBDecrypter(iv[:])
 		pt2 := make([]byte, len(ct))
 		fd.XORKeyStream(pt2, ct)
-		return bytes.Compare(pt2, pt) == 0
+		return bytes.Equal(pt2, pt)
 	}
 	if err := quick.Check(f, nil); err != nil {
 		t.Error(err)

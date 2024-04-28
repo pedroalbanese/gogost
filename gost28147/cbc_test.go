@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ func TestCBCCrypter(t *testing.T) {
 		e.CryptBlocks(ct, pt)
 		d := cipher.NewCBCDecrypter(c, iv[:])
 		d.CryptBlocks(ct, ct)
-		return bytes.Compare(pt, ct) == 0
+		return bytes.Equal(pt, ct)
 	}
 	if err := quick.Check(f, nil); err != nil {
 		t.Error(err)

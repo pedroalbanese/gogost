@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,19 +16,20 @@
 package gost3410
 
 import (
+	"fmt"
 	"math/big"
 )
 
 func (prv *PrivateKey) KEK(pub *PublicKey, ukm *big.Int) ([]byte, error) {
 	keyX, keyY, err := prv.C.Exp(prv.Key, pub.X, pub.Y)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("gogost/gost3410.PrivateKey.KEK: %w", err)
 	}
 	u := big.NewInt(0).Set(ukm).Mul(ukm, prv.C.Co)
 	if u.Cmp(bigInt1) != 0 {
 		keyX, keyY, err = prv.C.Exp(u, keyX, keyY)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("gogost/gost3410.PrivateKey.KEK: %w", err)
 		}
 	}
 	pk := PublicKey{prv.C, keyX, keyY}

@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -100,12 +100,12 @@ func TestECBGCL3Vectors(t *testing.T) {
 	e := c.NewECBEncrypter()
 	tmp := make([]byte, len(plaintext))
 	e.CryptBlocks(tmp, plaintext)
-	if bytes.Compare(tmp, ciphertext) != 0 {
+	if !bytes.Equal(tmp, ciphertext) {
 		t.Fatal("encryption failed")
 	}
 	d := c.NewECBDecrypter()
 	d.CryptBlocks(tmp, tmp)
-	if bytes.Compare(tmp, plaintext) != 0 {
+	if !bytes.Equal(tmp, plaintext) {
 		t.Fatal("decryption failed")
 	}
 }
@@ -130,7 +130,7 @@ func TestECBCryptoPPVectors(t *testing.T) {
 		ct = []byte{0x07, 0xF9, 0x02, 0x7D, 0xF7, 0xF7, 0xDF, 0x89}
 		c = NewCipher(key, sbox)
 		c.Encrypt(tmp, pt)
-		if bytes.Compare(tmp, ct) != 0 {
+		if !bytes.Equal(tmp, ct) {
 			t.FailNow()
 		}
 	})
@@ -146,7 +146,7 @@ func TestECBCryptoPPVectors(t *testing.T) {
 		ct = []byte{0x4F, 0xB5, 0x05, 0x36, 0xF9, 0x60, 0xA7, 0xB1}
 		c = NewCipher(key, sbox)
 		c.Encrypt(tmp, pt)
-		if bytes.Compare(tmp, ct) != 0 {
+		if !bytes.Equal(tmp, ct) {
 			t.FailNow()
 		}
 	})
@@ -162,7 +162,7 @@ func TestECBCryptoPPVectors(t *testing.T) {
 		ct = []byte{0x67, 0x00, 0x34, 0xAC, 0x0F, 0xA8, 0x11, 0xB5}
 		c = NewCipher(key, sbox)
 		c.Encrypt(tmp, pt)
-		if bytes.Compare(tmp, ct) != 0 {
+		if !bytes.Equal(tmp, ct) {
 			t.FailNow()
 		}
 	})
@@ -178,7 +178,7 @@ func TestECBCryptoPPVectors(t *testing.T) {
 		ct = []byte{0x81, 0x18, 0xFF, 0x9D, 0x3B, 0x3C, 0xFE, 0x7D}
 		c = NewCipher(key, sbox)
 		c.Encrypt(tmp, pt)
-		if bytes.Compare(tmp, ct) != 0 {
+		if !bytes.Equal(tmp, ct) {
 			t.FailNow()
 		}
 	})
@@ -194,7 +194,7 @@ func TestECBCryptoPPVectors(t *testing.T) {
 		ct = []byte{0xA0, 0x83, 0x82, 0x6A, 0x79, 0x0D, 0x3E, 0x0C}
 		c = NewCipher(key, sbox)
 		c.Encrypt(tmp, pt)
-		if bytes.Compare(tmp, ct) != 0 {
+		if !bytes.Equal(tmp, ct) {
 			t.FailNow()
 		}
 	})
@@ -210,7 +210,7 @@ func TestECBCryptoPPVectors(t *testing.T) {
 		ct = []byte{0x4D, 0x1F, 0x2E, 0x6B, 0x0D, 0x9D, 0xE2, 0xCE}
 		c = NewCipher(key, sbox)
 		c.Encrypt(tmp, pt)
-		if bytes.Compare(tmp, ct) != 0 {
+		if !bytes.Equal(tmp, ct) {
 			t.FailNow()
 		}
 	})
@@ -226,7 +226,7 @@ func TestECBCryptoPPVectors(t *testing.T) {
 		ct = []byte{0x2F, 0x3B, 0xB8, 0x48, 0x79, 0xD1, 0x1E, 0x52}
 		c = NewCipher(key, sbox)
 		c.Encrypt(tmp, pt)
-		if bytes.Compare(tmp, ct) != 0 {
+		if !bytes.Equal(tmp, ct) {
 			t.FailNow()
 		}
 	})
@@ -242,7 +242,7 @@ func TestECBCryptoPPVectors(t *testing.T) {
 		ct = []byte{0x96, 0xF0, 0xA5, 0xC7, 0x7A, 0x04, 0xF5, 0xCE}
 		c = NewCipher(key, sbox)
 		c.Encrypt(tmp, pt)
-		if bytes.Compare(tmp, ct) != 0 {
+		if !bytes.Equal(tmp, ct) {
 			t.FailNow()
 		}
 	})
@@ -259,7 +259,7 @@ func TestECBCryptomanager(t *testing.T) {
 	c := NewCipher(key, &SboxIdGostR341194TestParamSet)
 	tmp := make([]byte, BlockSize)
 	c.Encrypt(tmp, []byte{0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88})
-	if bytes.Compare(tmp, []byte{0x03, 0x25, 0x1E, 0x14, 0xF9, 0xD2, 0x8A, 0xCB}) != 0 {
+	if !bytes.Equal(tmp, []byte{0x03, 0x25, 0x1E, 0x14, 0xF9, 0xD2, 0x8A, 0xCB}) {
 		t.FailNow()
 	}
 }

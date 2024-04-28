@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ func pad(d []byte, size int) []byte {
 	return append(make([]byte, size-len(d)), d...)
 }
 
-func PointSize(p *big.Int) int {
+func pointSize(p *big.Int) int {
 	if p.BitLen() > 256 {
 		return 64
 	}

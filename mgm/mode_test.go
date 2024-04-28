@@ -1,5 +1,5 @@
 // GoGOST -- Pure Go GOST cryptographic functions library
-// Copyright (C) 2015-2021 Sergey Matveev <stargrave@stargrave.org>
+// Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@ import (
 	"testing"
 	"testing/quick"
 
-	"github.com/pedroalbanese/gogost/gost3412128"
-	"github.com/pedroalbanese/gogost/gost341264"
+	"go.cypherpunks.ru/gogost/v5/gost3412128"
+	"go.cypherpunks.ru/gogost/v5/gost341264"
 )
 
 func TestVector(t *testing.T) {
@@ -57,7 +57,7 @@ func TestVector(t *testing.T) {
 	nonce := plaintext[:16]
 	aead, _ := NewMGM(c, 16)
 	sealed := aead.Seal(nil, nonce, plaintext, additionalData)
-	if bytes.Compare(sealed[:len(plaintext)], []byte{
+	if !bytes.Equal(sealed[:len(plaintext)], []byte{
 		0xA9, 0x75, 0x7B, 0x81, 0x47, 0x95, 0x6E, 0x90,
 		0x55, 0xB8, 0xA3, 0x3D, 0xE8, 0x9F, 0x42, 0xFC,
 		0x80, 0x75, 0xD2, 0x21, 0x2B, 0xF9, 0xFD, 0x5B,
@@ -67,20 +67,20 @@ func TestVector(t *testing.T) {
 		0xC6, 0x0C, 0x14, 0xD4, 0xD3, 0xF8, 0x83, 0xD0,
 		0xAB, 0x94, 0x42, 0x06, 0x95, 0xC7, 0x6D, 0xEB,
 		0x2C, 0x75, 0x52,
-	}) != 0 {
+	}) {
 		t.FailNow()
 	}
-	if bytes.Compare(sealed[len(plaintext):], []byte{
+	if !bytes.Equal(sealed[len(plaintext):], []byte{
 		0xCF, 0x5D, 0x65, 0x6F, 0x40, 0xC3, 0x4F, 0x5C,
 		0x46, 0xE8, 0xBB, 0x0E, 0x29, 0xFC, 0xDB, 0x4C,
-	}) != 0 {
+	}) {
 		t.FailNow()
 	}
 	_, err := aead.Open(sealed[:0], nonce, sealed, additionalData)
 	if err != nil {
 		t.FailNow()
 	}
-	if bytes.Compare(sealed[:len(plaintext)], plaintext) != 0 {
+	if !bytes.Equal(sealed[:len(plaintext)], plaintext) {
 		t.FailNow()
 	}
 }
@@ -102,7 +102,7 @@ func TestSymmetric(t *testing.T) {
 			}
 			for _, initial := range initials {
 				sealed := aead.Seal(initial, nonce, plaintext, additionalData)
-				if bytes.Compare(sealed[:len(initial)], initial) != 0 {
+				if !bytes.Equal(sealed[:len(initial)], initial) {
 					return false
 				}
 				pt, err := aead.Open(
@@ -111,7 +111,7 @@ func TestSymmetric(t *testing.T) {
 					sealed[len(initial):],
 					additionalData,
 				)
-				if err != nil || bytes.Compare(pt, plaintext) != 0 {
+				if err != nil || !bytes.Equal(pt, plaintext) {
 					return false
 				}
 			}
