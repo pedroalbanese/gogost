@@ -1,4 +1,4 @@
-module go.cypherpunks.ru/gogost/v5
+module github.com/pedroalbanese/gogost
 
 go 1.20
 
