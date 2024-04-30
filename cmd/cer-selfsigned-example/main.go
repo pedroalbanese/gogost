@@ -28,8 +28,8 @@ import (
 	"os"
 	"time"
 
-	"crypto/go.cypherpunks.ru/gogost/v5/gost3410"
-	"crypto/go.cypherpunks.ru/gogost/v5/gost34112012256"
+	"github.com/pedroalbanese/gogost/gost3410"
+	"github.com/pedroalbanese/gogost/gost34112012256"
 )
 
 const (
