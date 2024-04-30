@@ -19,7 +19,7 @@ import (
 	"crypto/rand"
 	"testing"
 
-	"go.cypherpunks.ru/gogost/v5/gost341264"
+	"github.com/pedroalbanese/gogost/gost341264"
 )
 
 func BenchmarkMul64(b *testing.B) {

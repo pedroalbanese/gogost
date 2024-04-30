@@ -1,4 +1,4 @@
-// GoGOST -- Pure Go GOST cryptographic functions library
+﻿// GoGOST -- Pure Go GOST cryptographic functions library
 // Copyright (C) 2015-2024 Sergey Matveev <stargrave@stargrave.org>
 //
 // This program is free software: you can redistribute it and/or modify
