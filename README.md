@@ -21,7 +21,7 @@
 * GOST R 34.13-2015 padding methods
 * MGM AEAD mode for 64 and 128 bit ciphers (RFC 9058)
 
-GoGOST'es home page is: [http://www.gogost.cypherpunks.ru](http://www.gogost.cypherpunks.su/)
+GoGOST'es home page is: [http://www.gogost.cypherpunks.su](http://www.gogost.cypherpunks.su/)
 
 [GoDoc](https://pkg.go.dev/github.com/pedroalbanese/gogost)
 
